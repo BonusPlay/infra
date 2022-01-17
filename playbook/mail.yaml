@@ -1,0 +1,6 @@
+---
+- hosts: mail
+  remote_user: ubuntu
+  roles:
+  - mail
+  - p4net

@@ -1,0 +1,13 @@
+all:
+  children:
+    zion:
+      hosts:
+        localhost:
+    # zion:
+    #   hosts:
+    #     zion0:
+    #     zion1:
+    #     zion2:
+    #     zion3:
+    #   vars:
+    #     ansible_ssh_common_args: 'ProxyCommand="ssh -W %h:%p -q root@zibi.bonusplay.pl"'

@@ -1,0 +1,10 @@
+---
+- name: Copy config
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ ansible_hostname }}"
+    dest: /etc/wireguard/p4net.conf
+    owner: root
+    group: root
+    mode: "0600"
+# TODO: add to autostart

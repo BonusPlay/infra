@@ -1,0 +1,50 @@
+.:53 {
+	bind 127.0.53.1
+	bufsize 1232
+	acl {
+		allow net 198.18.0.0/16
+		block
+	}
+	hosts {
+		reload 0
+		fallthrough
+	}
+
+	errors
+	log
+}
+
+chivay.p4 {
+	forward . 198.18.1.1
+}
+1.18.198.in-addr.arpa {
+	forward . 198.18.1.1
+}
+
+ptrcnull.p4 {
+	forward . 198.18.42.1
+}
+42.18.198.in-addr.arpa {
+	forward . 198.18.42.1
+}
+
+dominikoso.p4 {
+	forward . 198.18.57.1
+}
+57.18.198.in-addr.arpa {
+	forward . 198.18.57.1
+}
+
+bonus.p4 {
+	file /data/zone.conf
+}
+69.18.198-in.addr.arpa {
+	whoami
+}
+
+msm.p4 {
+	forward . 198.18.70.1
+}
+70.18.198.in-addr.arpa {
+	forward . 198.18.70.1
+}

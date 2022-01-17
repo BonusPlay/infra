@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  coredns:
+    image: coredns/coredns
+    restart: always
+    ports:
+      - "198.18.69.1:53:53/tcp"
+      - "198.18.69.1:53:53/udp"
+    volumes:
+      - ./config:/data
+    command: '-conf /data/Corefile'

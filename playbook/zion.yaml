@@ -1,0 +1,4 @@
+---
+- hosts: zion
+  roles:
+  - zion

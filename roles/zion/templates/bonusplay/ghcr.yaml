@@ -1,0 +1,10 @@
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+apiVersion: v1
+metadata:
+    name: ghcr
+    namespace: bonusplay
+    labels:
+        app: bonusplay
+data:
+    .dockerconfigjson: {{ ghcr_docker_json }}

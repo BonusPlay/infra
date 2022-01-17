@@ -1,0 +1,10 @@
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+apiVersion: v1
+metadata:
+    name: ghcr
+    namespace: kncyber
+    labels:
+        app: kncyber
+data:
+    .dockerconfigjson: {{ ghcr_docker_json }}

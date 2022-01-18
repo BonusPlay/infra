@@ -3,12 +3,12 @@ all:
     zion:
       hosts:
         zion0:
-          ansible_host: 198.18.69.106
+          ansible_host: zion0.bonus.p4
         zion1:
-          ansible_host: 198.18.69.107
+          ansible_host: zion1.bonus.p4
         zion2:
-          ansible_host: 198.18.69.108
+          ansible_host: zion2.bonus.p4
         zion3:
-          ansible_host: 198.18.69.109
+          ansible_host: zion3.bonus.p4
       vars:
         ansible_user: root

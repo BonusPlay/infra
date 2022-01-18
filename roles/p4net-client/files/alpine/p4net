@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+name=$RC_SVCNAME
+description="WireGuard via wg-quick for p4net"
+command="/usr/bin/wg-quick"
+command_args="up p4net"
+
+depend() {
+    after network-online dns
+    use network-online dns
+}
+
+stop() {
+    ebegin "Stopping $RC_SVCNAME"
+    /usr/bin/wg-quick down p4net
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading $RC_SVCNAME"
+    /bin/bash -c 'exec /usr/bin/wg syncconf p4net <(exec /usr/bin/wg-quick strip p4net)'
+    eend $?
+}

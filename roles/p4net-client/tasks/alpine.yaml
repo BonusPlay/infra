@@ -1,0 +1,37 @@
+---
+- name: install deps
+  community.general.apk:
+    name:
+    - wireguard-tools
+    - dnsmasq
+    state: present
+    update_cache: yes
+- name: auto load wireguard module
+  ansible.builtin.copy:
+    src: alpine/wireguard
+    dest: /etc/modules-load.d/wireguard
+    owner: root
+    group: root
+    mode: "0644"
+- name: modprobe wireguard
+  ansible.builtin.shell: modprobe wireguard
+- name: copy init.d file
+  ansible.builtin.copy:
+    src: alpine/p4net
+    dest: /etc/init.d/p4net
+    owner: root
+    group: root
+    mode: "0755"
+- name: Copy config
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ ansible_hostname }}.conf"
+    dest: /etc/wireguard/p4net.conf
+    owner: root
+    group: root
+    mode: "0600"
+- name: enable service
+  ansible.builtin.service:
+    name: p4net
+    enabled: yes
+    state: started

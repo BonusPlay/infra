@@ -1,4 +1,5 @@
 ---
 - hosts: zion
   roles:
-  - zion
+  # - zion
+  - p4net-client

@@ -30,11 +30,6 @@
     owner: root
     group: root
     mode: "0600"
-  # this is not optimal, but I'm not the best at ansible
-  vars:
-    addr: "{{ clients['ansible_hostname'].addr }}"
-    nat: "{{ clients['ansible_hostname'].nat }}"
-    privkey: "{{ clients['ansible_hostname'].privkey }}"
 - name: enable service
   ansible.builtin.service:
     name: p4net

@@ -1,3 +1,0 @@
----
-- name: configure sshd
-  import_tasks: sshd.yaml

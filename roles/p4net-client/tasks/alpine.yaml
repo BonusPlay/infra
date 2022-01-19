@@ -24,12 +24,17 @@
     mode: "0755"
 - name: Copy config
   become: yes
-  ansible.builtin.copy:
-    src: "{{ ansible_hostname }}.conf"
+  ansible.builtin.template:
+    src: p4net.conf
     dest: /etc/wireguard/p4net.conf
     owner: root
     group: root
     mode: "0600"
+  # this is not optimal, but I'm not the best at ansible
+  vars:
+    addr: "{{ clients['ansible_hostname'].addr }}"
+    nat: "{{ clients['ansible_hostname'].nat }}"
+    privkey: "{{ clients['ansible_hostname'].privkey }}"
 - name: enable service
   ansible.builtin.service:
     name: p4net

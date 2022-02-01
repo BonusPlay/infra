@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-drive1
+  namespace: nfs-server
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 700Gi
+  local:
+    path: /mnt/drive_1/music
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - zion3
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-drive1
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-drive1
+  namespace: nfs-server
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 700Gi
+  storageClassName: nfs-drive1
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-drive2
+  namespace: nfs-server
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 90Gi
+  local:
+    path: /mnt/drive_2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - zion3
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-drive2
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-drive2
+  namespace: nfs-server
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 90Gi
+  storageClassName: nfs-drive2
+  volumeMode: Filesystem

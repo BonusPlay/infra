@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exports
+  namespace: nfs-server
+data:
+  exports: |
+    /mnt         192.168.100.0/24(rw,sync,root_squash,subtree_check,fsid=0)
+    /mnt/k8s     192.168.100.0/24(rw,sync,no_root_squash,no_all_squash,no_subtree_check)
+    /mnt/music   192.168.100.0/24(ro,sync,all_squash,no_subtree_check)

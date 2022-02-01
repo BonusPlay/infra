@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: warez
+  namespace: warez
+type: Opaque
+data:
+  USERS: "{{ warez.users | b64encode }}"

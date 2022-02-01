@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kutt
+  namespace: kutt
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500Mi
+  nfs:
+    server: 192.168.100.10
+    path: "/kutt-pv"
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kutt
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kutt
+  namespace: kutt
+  labels:
+    app: kutt
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: kutt
+  volumeMode: Filesystem

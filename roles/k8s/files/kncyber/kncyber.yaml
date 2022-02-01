@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kncyber
+  namespace: kncyber
+  labels:
+    app: kncyber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kncyber
+  template:
+    metadata:
+      labels:
+        app: kncyber
+    spec:
+      containers:
+      - name: kncyber
+        image: ghcr.io/kncyber/kncyber.pl:latest
+        imagePullPolicy: Always
+        args: ["3010"]
+        ports:
+        - name: http
+          containerPort: 3010
+          protocol: TCP
+      imagePullSecrets:
+      - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kncyber
+  namespace: kncyber
+  labels:
+    app: kncyber
+spec:
+  type: ClusterIP
+  selector:
+    app: kncyber
+  ports:
+  - name: http
+    port: 3010
+    protocol: TCP
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kncyber
+  namespace: kncyber
+  labels:
+    app: kncyber
+  annotations:
+    cert-manager.io/cluster-issuer: kncyber
+spec:
+  tls:
+  - secretName: tls
+    hosts:
+    - "kncyber.pl"
+    - "*.kncyber.pl"
+  rules:
+  - host: kncyber.pl
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kncyber
+            port:
+              name: http

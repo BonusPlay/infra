@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warez
+  namespace: warez
+  labels:
+    app: sftp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sftp
+  template:
+    metadata:
+      labels:
+        app: sftp
+    spec:
+      containers:
+      - name: sftp
+        image: ghcr.io/bonusplay/sftp:3ad3557
+        imagePullPolicy: IfNotPresent
+        args: ["$(USERS)"]
+        ports:
+        - name: sftp
+          containerPort: 22
+          protocol: TCP
+        env:
+        - name: USERS
+          valueFrom:
+            secretKeyRef:
+              name: warez
+              key: USERS
+        volumeMounts:
+        - mountPath: /home/p4/upload
+          name: warez-pv
+          subPath: p4-upload
+      volumes:
+      - name: warez-pv
+        persistentVolumeClaim:
+          claimName: warez
+      imagePullSecrets:
+      - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: warez
+  namespace: warez
+  labels:
+    app: sftp
+spec:
+  type: LoadBalancer
+  selector:
+    app: sftp
+  ports:
+  - name: sftp
+    port: 2222
+    protocol: TCP
+    targetPort: sftp

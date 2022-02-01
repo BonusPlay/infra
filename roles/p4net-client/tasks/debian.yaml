@@ -1,0 +1,30 @@
+---
+- name: install deps
+  ansible.builtin.apt:
+    name:
+    - wireguard
+    # - dnsmasq
+    state: present
+    update_cache: yes
+# - name: auto load wireguard module
+#   ansible.builtin.copy:
+#     src: wireguard
+#     dest: /etc/modules-load.d/wireguard
+#     owner: root
+#     group: root
+#     mode: "0644"
+# - name: modprobe wireguard
+#   ansible.builtin.shell: modprobe wireguard
+- name: copy config
+  become: yes
+  ansible.builtin.template:
+    src: p4net.conf
+    dest: /etc/wireguard/p4net.conf
+    owner: root
+    group: root
+    mode: "0600"
+- name: enable service
+  ansible.builtin.service:
+    name: wg-quick@p4net
+    enabled: yes
+    state: started

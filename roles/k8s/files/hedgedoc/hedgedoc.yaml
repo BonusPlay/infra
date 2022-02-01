@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+  labels:
+    app: hedgedoc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hedgedoc
+  template:
+    metadata:
+      labels:
+        app: hedgedoc
+    spec:
+      containers:
+      - name: hedgedoc
+        image: ghcr.io/linuxserver/hedgedoc:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        env:
+        - name: CMD_DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: hedgedoc
+              key: CMD_DB_URL
+        - name: PGID
+          value: "1000"
+        - name: PUID
+          value: "1000"
+        - name: TZ
+          value: "Europe/Warsaw"
+
+        # disallow guests
+        - name: CMD_ALLOW_ANONYMOUS
+          value: "false"
+        - name: CMD_ALLOW_ANONYMOUS_EDITS
+          value: "false"
+        - name: CMD_ALLOW_FREEURL
+          value: "false"
+        - name: CMD_DEFAULT_PERMISSION
+          value: "limited"
+
+        # disable email and registration
+        - name: CMD_EMAIL
+          value: "false"
+        - name: CMD_ALLOW_EMAIL_REGISTER
+          value: "false"
+
+        # keycloak OAuth2
+        - name: CMD_OAUTH2_USER_PROFILE_URL
+          value: "https://keycloak.kncyber.pl/auth/realms/kncyber/protocol/openid-connect/userinfo"
+        - name: CMD_OAUTH2_USER_PROFILE_USERNAME_ATTR
+          value: "preferred_username"
+        - name: CMD_OAUTH2_USER_PROFILE_DISPLAY_NAME_ATTR
+          value: "name"
+        - name: CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR
+          value: "email"
+        - name: CMD_OAUTH2_TOKEN_URL
+          value: "https://keycloak.kncyber.pl/auth/realms/kncyber/protocol/openid-connect/token"
+        - name: CMD_OAUTH2_AUTHORIZATION_URL
+          value: "https://keycloak.kncyber.pl/auth/realms/kncyber/protocol/openid-connect/auth"
+        - name: CMD_OAUTH2_CLIENT_ID
+          value: "hedgedoc"
+        - name: CMD_OAUTH2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: hedgedoc
+              key: CMD_OAUTH2_CLIENT_SECRET
+        - name: CMD_OAUTH2_PROVIDERNAME
+          value: "Keycloak"
+        - name: CMD_DOMAIN
+          value: "md.kncyber.pl"
+        - name: CMD_PROTOCOL_USESSL
+          value: "true"
+        - name: CMD_URL_ADDPORT
+          value: "false"
+
+        volumeMounts:
+        - name: hedgedoc-pv
+          mountPath: /config
+          subPath: config
+      volumes:
+      - name: hedgedoc-pv
+        persistentVolumeClaim:
+          claimName: hedgedoc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+  labels:
+    app: hedgedoc
+spec:
+  type: ClusterIP
+  selector:
+    app: hedgedoc
+  ports:
+  - name: http
+    port: 3000
+    protocol: TCP
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+  labels:
+    app: hedgedoc
+  annotations:
+    cert-manager.io/cluster-issuer: kncyber
+spec:
+  tls:
+  - secretName: kncyber-tls
+    hosts:
+    - "kncyber.pl"
+    - "*.kncyber.pl"
+  rules:
+  - host: md.kncyber.pl
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: hedgedoc
+            port:
+              name: http

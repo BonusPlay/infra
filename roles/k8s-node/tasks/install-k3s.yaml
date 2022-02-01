@@ -1,0 +1,28 @@
+---
+# - name: setup master node
+#   block:
+#   - name: install k3s
+#     ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+#     environment:
+#       INSTALL_K3S_EXEC: '--disable=local-storage,metrics-server --flannel-backend=none --disable-network-policy --secrets-encryption --node-name="{{ ansible_hostname }}"'
+#   - name: wait for setup
+#     wait_for:
+#       path: /var/lib/rancher/k3s/server/node-token
+#       state: present
+#       msg: timed out waiting for node-token
+#   - name: save node_token
+#     ansible.builtin.slurp:
+#       src: /var/lib/rancher/k3s/server/node-token
+#     register: node_token
+#   when: k8s.master
+- name: setup workers
+  block:
+  - name: install k3s
+    ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+    environment:
+      K3S_URL: "https://{{ master_ip }}:6443"
+      K3S_TOKEN: "{{ node_token }}"
+    vars:
+      master_ip: "192.168.100.10"
+      node_token: "K1044604a229985dac66e088f9fa69826c88de75088a1e282b6baa2b884f39c1c7e::server:80644bcf2956955a52583036ff12434e"
+  when: not k8s.master

@@ -1,0 +1,11 @@
+---
+- name: find all directories in templates
+  ansible.builtin.find:
+    paths: "{{ role_path }}/templates"
+    recurse: yes
+  register: templates
+- name:
+  kubernetes.core.k8s:
+    template: "{{ item }}"
+    state: present
+  with_items: "{{ templates.files | map(attribute='path') | replace(role_path + '/templates/', '') }}"

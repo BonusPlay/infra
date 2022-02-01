@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+type: Opaque
+data:
+  CMD_DB_URL: "{{ 'postgresql://hedgedoc:{{ hedgedoc.postgres_password }}@postgres:5432/hedgedoc' | b64encode }}"
+  CMD_OAUTH2_CLIENT_SECRET: "{{ hedgedoc.keycloak_oauth_client_secret | b64encode }}"

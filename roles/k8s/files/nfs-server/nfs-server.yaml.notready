@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-server
+  namespace: nfs-server
+  labels:
+    app: nfs-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-server
+  template:
+    metadata:
+      labels:
+        app: nfs-server
+    spec:
+      containers:
+      - name: nfs-server
+        image: "itsthenetwork/nfs-server-alpine:latest-arm"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: nfs
+          containerPort: 2049
+          protocol: TCP
+        env:
+        - name: "SHARED_DIRECTORY"
+          value: "/data"
+        volumeMounts:
+        - name: "nfs-pv"
+          mountPath: "/data"
+        securityContext:
+          capabilities:
+            add: ["SYS_ADMIN", "SETPCAP"]
+      volumes:
+      - name: "nfs-pv"
+        persistentVolumeClaim:
+          claimName: "nfs"
+      # containers:
+      # - name: nfs-server
+      #   image: "ghcr.io/bonusplay/nfs-server:3.15"
+      #   imagePullPolicy: IfNotPresent
+      #   ports:
+      #   - name: nfs
+      #     containerPort: 2049
+      #     protocol: TCP
+      #   volumeMounts:
+      #   - mountPath: "/mnt/music"
+      #     name: "nfs-pv1"
+      #     readOnly: true
+      #   - mountPath: "/mnt/k8s"
+      #     name: "nfs-pv2"
+      #   - mountPath: "/etc/exports"
+      #     name: "config-exports"
+      #     subPath: "exports"
+      #   securityContext:
+      #     capabilities:
+      #       add: ["SYS_ADMIN", "SETPCAP"]
+      # volumes:
+      # - name: "nfs-pv1"
+      #   persistentVolumeClaim:
+      #     claimName: "nfs-drive1"
+      # - name: "nfs-pv2"
+      #   persistentVolumeClaim:
+      #     claimName: "nfs-drive2"
+      # - name: "config-exports"
+      #   configMap:
+      #     name: "exports"
+      # imagePullSecrets:
+      # - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfs-server
+  namespace: nfs-server
+  labels:
+    app: nfs-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: nfs-server
+  ports:
+  - name: nfs
+    port: 2049
+    protocol: TCP
+    targetPort: 2049

@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres
+  namespace: matrix
+data:
+  10-create-users.sh: |
+    #!/bin/bash
+    set -e
+
+    POSTGRES="psql --username ${POSTGRES_USER}"
+
+    for i in {0..100}; do
+        username="DB_USER_${i}"
+        password="DB_PASS_${i}"
+
+        if [[ -z "${!username}" ]]; then
+            echo "env var '${username}' not found, break loop"
+            break
+        fi
+
+        if [[ -z "${!password}" ]]; then
+            echo "error, ${username} present but ${password} is not!"
+            exit 1
+        fi
+
+        echo "Creating database role: ${!username}"
+
+        $POSTGRES <<-EOSQL
+        CREATE USER ${!username} WITH CREATEDB PASSWORD '${!password}';
+    EOSQL
+    done
+  20-create-databases.sh: |
+    #!/bin/bash
+    set -e
+
+    POSTGRES="psql --username ${POSTGRES_USER}"
+
+    for i in {0..100}; do
+        dbname="DB_NAME_${i}"
+        dbowner="DB_OWNER_${i}"
+        dbargs="DB_INIT_ARGS_${i}"
+
+        if [[ -z "${!dbname}" ]]; then
+            echo "env var '${dbname}' not found, break loop"
+            break
+        fi
+
+        if [[ -z "${!dbowner}" ]]; then
+            echo "error, ${dbname} present but ${dbowner} is not!"
+            exit 1
+        fi
+
+        if [[ -n "${!dbargs}" ]]; then
+            echo "${dbargs} is set, using ${!dbargs}"
+            dbargs=${!dbargs}
+        else
+            dbargs=""
+        fi
+
+        echo "Creating database ${!username} owner ${!dbowner}"
+
+        $POSTGRES <<-EOSQL
+        CREATE DATABASE ${!dbname} OWNER ${!dbowner} $dbargs;
+    EOSQL
+    done

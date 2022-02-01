@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: monitoring
+  namespace: monitoring
+spec:
+  nfs:
+    server: 192.168.100.10
+    path: "/monitoring-pv"
+  capacity:
+    storage: 500Mi
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: monitoring
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: monitoring
+  namespace: monitoring
+spec:
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: monitoring
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce

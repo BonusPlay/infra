@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres
+  namespace: matrix
+type: Opaque
+data:
+  POSTGRES_PASSWORD: "{{ synapse.postgres_password | b64encode }}"
+  DB_PASS_0: "{{ synapse.postgres_password | b64encode }}"
+  DB_PASS_1: "{{ googlechat.postgres_password | b64encode }}"
+  DB_PASS_2: "{{ telegram.postgres_password | b64encode }}"

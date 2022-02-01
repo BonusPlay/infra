@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: matrix
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:11
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: matrix-pv
+          subPath: postgres
+        - name: config-pv
+          mountPath: /docker-entrypoint-initdb.d
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: POSTGRES_PASSWORD
+
+        - name: DB_USER_0
+          value: "synapse"
+        - name: DB_PASS_0
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: DB_PASS_0
+        - name: DB_NAME_0
+          value: "synapse"
+        - name: DB_OWNER_0
+          value: "synapse"
+        - name: DB_INIT_ARGS_0
+          value: "ENCODING 'UTF-8' LC_COLLATE = 'C' LC_CTYPE = 'C'"
+        
+        - name: DB_USER_1
+          value: "googlechat"
+        - name: DB_PASS_1
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: DB_PASS_1
+        - name: DB_NAME_1
+          value: "googlechat"
+        - name: DB_OWNER_1
+          value: "googlechat"
+          
+        - name: DB_USER_2
+          value: "telegram"
+        - name: DB_PASS_2
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: DB_PASS_2
+        - name: DB_NAME_2
+          value: "telegram"
+        - name: DB_OWNER_2
+          value: "telegram"
+
+      volumes:
+      - name: matrix-pv
+        persistentVolumeClaim:
+          claimName: matrix
+      - name: config-pv
+        configMap:
+          name: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: matrix
+  labels:
+    app: postgres
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: postgres

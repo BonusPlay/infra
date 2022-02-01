@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+  namespace: registry
+  labels:
+    app: registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - name: registry
+        image: registry
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 5000
+          protocol: TCP
+        - name: metrics
+          containerPort: 5001
+          protocol: TCP
+        env:
+        - name: REGISTRY_AUTH
+          value: "htpasswd"
+        - name: REGISTRY_AUTH_HTPASSWD_REALM
+          value: "Registry Realm"
+        - name: REGISTRY_AUTH_HTPASSWD_PATH
+          value: "/auth/htpasswd"
+        volumeMounts:
+        - mountPath: "/var/lib/registry"
+          name: registry-pv
+        - mountPath: "/auth"
+          name: auth-pv
+      volumes:
+      - name: registry-pv
+        persistentVolumeClaim:
+          claimName: registry
+      - name: auth-pv
+        configMap:
+          name: auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  namespace: registry
+  labels:
+    app: registry
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5001'
+spec:
+  type: ClusterIP
+  selector:
+    app: registry
+  ports:
+  - name: http
+    port: 5000
+    protocol: TCP
+    targetPort: http
+  - name: metrics
+    port: 5001
+    protocol: TCP
+    targetPort: metrics
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: registry
+  namespace: registry
+  labels:
+    app: registry
+  annotations:
+    cert-manager.io/cluster-issuer: bonusplay
+spec:
+  tls:
+  - secretName: tls
+    hosts:
+    - "bonusplay.pl"
+    - "*.bonusplay.pl"
+  rules:
+  - host: registry.bonusplay.pl
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: registry
+            port:
+              name: http

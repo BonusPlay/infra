@@ -1,0 +1,13 @@
+- name: ensure directories exist
+  become: yes
+  ansible.builtin.file:
+    
+  with_items:
+  - /opt/coredns
+  - /opt/coredns/config
+- name: copy files
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/opt/coredns/{{ item }}"
+

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: matrix
+  namespace: matrix
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 5Gi
+  nfs:
+    server: 192.168.100.10
+    path: "/matrix-pv"
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: matrix
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: matrix
+  namespace: matrix
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+        storage: 5Gi
+  storageClassName: matrix
+  volumeMode: Filesystem

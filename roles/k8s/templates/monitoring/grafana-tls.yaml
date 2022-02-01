@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: grafana-tls
+  namespace: monitoring
+data:
+  tls.crt: "{{ grafana.tls.crt | join('\n') | b64encode }}"
+  tls.key: "{{ grafana.tls.key | b64encode }}"

@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  namespace: matrix
+  labels:
+    app: synapse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: synapse
+  template:
+    metadata:
+      labels:
+        app: synapse
+    spec:
+      containers:
+      - name: synapse
+        # image: ghcr.io/bonusplay/matrix-synapse:v1.51.0
+        image: docker.io/matrixdotorg/synapse:v1.51.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8008
+          protocol: TCP
+        - name: metrics
+          containerPort: 9000
+          protocol: TCP
+        env:
+        - name: SYNAPSE_CONFIG_DIR
+          value: /config
+        volumeMounts:
+        - name: matrix-pv
+          mountPath: /data
+          subPath: synapse
+        - name: config-pv
+          mountPath: /config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8008
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+      volumes:
+      - name: matrix-pv
+        persistentVolumeClaim:
+          claimName: matrix
+      - name: config-pv
+        configMap:
+          name: synapse
+      imagePullSecrets:
+      - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse
+  namespace: matrix
+  labels:
+    app: synapse
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9000'
+    prometheus.io/path: "/_synapse/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    app: synapse
+  ports:
+  - name: http
+    port: 8008
+    protocol: TCP
+    targetPort: http
+  - name: metrics
+    port: 9000
+    protocol: TCP
+    targetPort: metrics
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: synapse
+  namespace: matrix
+  labels:
+    app: synapse
+  annotations:
+    cert-manager.io/cluster-issuer: bonusplay
+spec:
+  tls:
+  - secretName: tls
+    hosts:
+    - "bonusplay.pl"
+    - "*.bonusplay.pl"
+  rules:
+  - host: matrix.bonusplay.pl
+    http:
+      paths:
+      - path: /_matrix
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: synapse
+            port:
+              name: http

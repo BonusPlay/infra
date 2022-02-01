@@ -1,14 +1,26 @@
 all:
+  hosts:
+    zonas:
+      ansible_host: zonas.bonus.p4
+      ansible_ssh_user: root
+    zion0:
+      ansible_host: zion0.bonus.p4
+    zion1:
+      ansible_host: zion1.bonus.p4
+    zion2:
+      ansible_host: zion2.bonus.p4
+    zion3:
+      ansible_host: zion3.bonus.p4
+    zyga4:
+      ansible_host: zyga4.bonus.p4
+    zed3:
+      ansible_host: zed3.bonus.p4
   children:
     zion:
       hosts:
         zion0:
-          ansible_host: zion0.bonus.p4
         zion1:
-          ansible_host: zion1.bonus.p4
         zion2:
-          ansible_host: zion2.bonus.p4
         zion3:
-          ansible_host: zion3.bonus.p4
       vars:
         ansible_user: root

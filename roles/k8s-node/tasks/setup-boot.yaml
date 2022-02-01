@@ -1,0 +1,24 @@
+---
+- name: setup interfaces
+  ansible.builtin.template:
+    src: interfaces
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: "0644"
+- name: setup startup script
+  ansible.builtin.copy:
+    src: startup.start
+    dest: /etc/local.d/startup.start
+    owner: root
+    group: root
+    mode: "0755"
+- name: delete default file
+  ansible.builin.file:
+    path: /etc/local.d/headless.start
+    state: absent
+- name: ensure startup scripts are called
+  ansible.builtin.service:
+    name: local
+    state: started
+    enabled: yes

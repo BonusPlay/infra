@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# needed for cadvisor
+mkdir /sys/fs/cgroup/cgroup
+
+# needed for cadvisor and calico
+mount --make-rshared /

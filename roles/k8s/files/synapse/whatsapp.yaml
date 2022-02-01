@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whatsapp
+  namespace: matrix
+  labels:
+    app: whatsapp
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: whatsapp
+  template:
+    metadata:
+      labels:
+        app: whatsapp
+    spec:
+      containers:
+      - name: whatsapp
+        image: dock.mau.dev/mautrix/whatsapp:v.2.3
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: matrix-pv
+          mountPath: /data
+          subPath: whatsapp
+      volumes:
+      - name: matrix-pv
+        persistentVolumeClaim:
+          claimName: matrix
+      - name: config-pv
+        configMap:
+          name: matrix

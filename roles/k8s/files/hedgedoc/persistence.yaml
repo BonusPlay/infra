@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500Mi
+  nfs:
+    server: 192.168.100.10
+    path: "/hedgedoc-pv"
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hedgedoc
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hedgedoc
+  namespace: hedgedoc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: hedgedoc
+  volumeMode: Filesystem

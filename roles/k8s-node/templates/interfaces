@@ -1,0 +1,10 @@
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address {{ ansible_host }}
+    netmask 255.255.255.0
+    gateway 192.168.100.1
+    hostname {{ ansible_hostname }}
+    up ip route add 192.168.0.20 via 192.168.100.2

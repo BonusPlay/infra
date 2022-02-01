@@ -1,0 +1,8 @@
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+apiVersion: v1
+metadata:
+  name: registry
+  namespace: monitoring
+data:
+    .dockerconfigjson: {{ registry_docker_json }}

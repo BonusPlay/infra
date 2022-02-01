@@ -1,0 +1,8 @@
+---
+- name: create all namespaces
+  kubernetes.core.k8s:
+    src: namespaces.yaml
+    state: present
+- import_tasks: cert-manager.yaml
+- import_tasks: templates.yaml
+- import_tasks: files.yaml

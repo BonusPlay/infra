@@ -1,1 +1,5 @@
-- src: community.general
+---
+collections:
+- community.docker
+- community.general
+- kubernetes.core

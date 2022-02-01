@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:8.3.4
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        resources:
+          requests: 
+            memory: 500M
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: monitoring-pv
+          subPath: grafana
+        - mountPath: /etc/grafana/provisioning/datasources
+          name: config-prometheus
+          readOnly: false
+        - mountPath: /etc/grafana
+          name: config-grafana
+          readOnly: false
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          runAsGroup: 1000
+      volumes:
+      - name: config-prometheus
+        configMap:
+          name: prometheus
+      - name: config-grafana
+        configMap:
+          name: grafana
+      - name: monitoring-pv
+        persistentVolumeClaim:
+          claimName: monitoring
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3000'
+spec:
+  selector: 
+    app: grafana
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  tls:
+  - hosts:
+    - graf.bonus.p4
+    secretName: grafana-tls
+  rules:
+  - host: graf.bonus.p4
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: grafana
+            port:
+              name: http

@@ -1,0 +1,12 @@
+---
+- name: create missing directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  with_items:
+  - /var/lib/calico
+  - /var/run/calico
+- name: install calico

@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kutt
+  namespace: kutt
+  labels:
+    app: kutt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kutt
+  template:
+    metadata:
+      labels:
+        app: kutt
+    spec:
+      containers:
+      - name: kutt
+        image: kutt/kutt
+        imagePullPolicy: IfNotPresent
+        command: ["./wait-for-it.sh"]
+        args: ["postgres:5432", "--", "npm", "start"]
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        env:
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_NAME
+          value: "kutt"
+        - name: DB_USER
+          value: "kutt"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kutt
+              key: DB_PASSWORD
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SITE_NAME
+          value: "Kutt shortener"
+        - name: DEFAULT_DOMAIN
+          value: "s.bonus.re"
+        - name: LINK_LENGTH
+          value: "6"
+        - name: DISALLOW_REGISTRATION
+          value: "false"
+        - name: DISALLOW_ANONYMOUS_LINKS
+          value: "false"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: kutt
+              key: JWT_SECRET
+        # - name: ADMIN_EMAILS
+        #   value: "kutt@bonusplay.pl"
+        # - name: REPORT_EMAIL
+        #   value: "kutt@bonusplay.pl"
+        # - name: CONTACT_EMAIL
+        #   value: "kutt@bonusplay.pl"
+        # - name: MAIL_HOST
+        #   value: "mail.bonusplay.pl"
+        # - name: MAIL_PORT
+        #   value: "465"
+        # - name: MAIL_SECURE
+        #   value: "true"
+        # - name: MAIL_USER
+        #   value: "{{ smtp.username }}"
+        # - name: MAIL_FROM
+        #   value: "kutt@bonusplay.pl"
+        # - name: MAIL_PASSWORD
+        #   value: "{{ smtp.password }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kutt
+  namespace: kutt
+  labels:
+    app: kutt
+spec:
+  type: ClusterIP
+  selector:
+    app: kutt
+  ports:
+  - name: http
+    port: 3000
+    protocol: TCP
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kutt
+  namespace: kutt
+  labels:
+    app: kutt
+  annotations:
+    cert-manager.io/cluster-issuer: bonusplay
+spec:
+  tls:
+  - hosts:
+    - "bonus.re"
+    - "*.bonus.re"
+  rules:
+  - host: s.bonus.re
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kutt
+            port:
+              name: http

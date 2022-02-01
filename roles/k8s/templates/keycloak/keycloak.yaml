@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak
+  namespace: keycloak
+type: Opaque
+data:
+  DB_PASSWORD: "{{ keycloak.postgres_password | b64encode }}"
+  KEYCLOAK_PASSWORD: "{{ keycloak.admin_password | b64encode }}"

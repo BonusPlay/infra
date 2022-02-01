@@ -1,0 +1,49 @@
+apiVersion: crd.projectcalico.org/v1
+kind: FelixConfiguration
+metadata:
+  generation: 2
+  name: default
+spec:
+  bpfLogLevel: ""
+  ipipEnabled: true
+  logSeverityScreen: Info
+  reportingInterval: 0s
+  prometheusMetricsEnabled: true
+---
+apiVersion: crd.projectcalico.org/v1
+kind: KubeControllersConfiguration
+metadata:
+  generation: 2
+  name: default
+spec:
+  controllers:
+    namespace:
+      reconcilerPeriod: 5m0s
+    node:
+      leakGracePeriod: 15m0s
+      reconcilerPeriod: 5m0s
+      syncLabels: Enabled
+    policy:
+      reconcilerPeriod: 5m0s
+    serviceAccount:
+      reconcilerPeriod: 5m0s
+    workloadEndpoint:
+      reconcilerPeriod: 5m0s
+  etcdV3CompactionPeriod: 10m0s
+  healthChecks: Enabled
+  logSeverityScreen: Info
+  prometheusMetricsPort: 9094
+status:
+  environmentVars:
+    DATASTORE_TYPE: kubernetes
+    ENABLED_CONTROLLERS: node
+  runningConfig:
+    controllers:
+      node:
+        hostEndpoint:
+          autoCreate: Disabled
+        leakGracePeriod: 15m0s
+        syncLabels: Disabled
+    etcdV3CompactionPeriod: 10m0s
+    healthChecks: Enabled
+    logSeverityScreen: Info

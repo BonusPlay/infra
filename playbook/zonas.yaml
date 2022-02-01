@@ -1,0 +1,4 @@
+---
+- hosts: zonas
+  roles:
+  - p4net-client

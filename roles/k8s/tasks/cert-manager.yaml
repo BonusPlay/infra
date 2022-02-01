@@ -1,0 +1,18 @@
+---
+- name: create temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+  register: temp
+- name: download cert-manager definitions
+  ansible.builtin.get_url:
+    url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+    dest: "{{ temp.path }}"
+- name: install cert-manager
+  kubernetes.core.k8s:
+    src: "{{ temp.path }}/cert-manager.yaml"
+    state: present
+- name: delete temporary directory
+  ansible.builtin.file:
+    path: "{{ temp.path }}"
+    state: absent
+  when: temp.path is defined

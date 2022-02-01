@@ -1,0 +1,8 @@
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+apiVersion: v1
+metadata:
+  name: registry
+  namespace: nfs-server
+data:
+  .dockerconfigjson: {{ ghcr_docker_json }}

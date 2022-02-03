@@ -7,6 +7,14 @@ grafana:
      - "{{ lookup('file', './files/ssl/ca-p4.crt') }}"
     key: "{{ lookup('file', './files/ssl/graf.bonus.p4.key') }}"
 
+bonus_p4:
+  tls:
+    crt:
+     - "{{ lookup('file', './files/ssl/bonus.p4.crt') }}"
+     - "{{ lookup('file', './files/ssl/ca-bonus.crt') }}"
+     - "{{ lookup('file', './files/ssl/ca-p4.crt') }}"
+    key: "{{ lookup('file', './files/ssl/bonus.p4.key') }}"
+
 hedgedoc:
   postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

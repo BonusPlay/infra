@@ -3,6 +3,6 @@ type: kubernetes.io/dockerconfigjson
 apiVersion: v1
 metadata:
   name: registry
-  namespace: bonusplay
+  namespace: bonusplay-pl
 data:
   .dockerconfigjson: {{ ghcr_docker_json }}

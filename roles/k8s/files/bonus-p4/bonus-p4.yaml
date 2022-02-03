@@ -1,28 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bonusplay
-  namespace: bonusplay
+  name: bonus-p4
+  namespace: bonus-p4
   labels:
-    app: bonusplay
+    app: bonus-p4
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bonusplay
+      app: bonus-p4
   template:
     metadata:
       labels:
-        app: bonusplay
+        app: bonus-p4
     spec:
       containers:
-      - name: bonusplay
-        image: ghcr.io/bonusplay/bonusplay.pl:latest
+      - name: bonus-p4
+        image: ghcr.io/bonusplay/bonus.p4:latest
         imagePullPolicy: Always
-        args: ["3010"]
         ports:
         - name: http
-          containerPort: 3010
+          containerPort: 80
           protocol: TCP
       imagePullSecrets:
       - name: registry
@@ -30,43 +29,39 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: bonusplay
-  namespace: bonusplay
-  labels:
-    app: bonusplay
+  name: bonus-p4
+  namespace: bonus-p4
 spec:
   type: ClusterIP
   selector:
-    app: bonusplay
+    app: bonus-p4
   ports:
   - name: http
-    port: 3010
+    port: 80
     protocol: TCP
     targetPort: http
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: bonusplay
-  namespace: bonusplay
-  labels:
-    app: bonusplay
+  name: bonus-p4
+  namespace: bonus-p4
   annotations:
-    cert-manager.io/cluster-issuer: bonusplay
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: bonus-p4-https@kubernetescrd
 spec:
   tls:
   - secretName: tls
     hosts:
-    - "bonusplay.pl"
-    - "*.bonusplay.pl"
+    - "bonus.p4"
   rules:
-  - host: bonusplay.pl
+  - host: bonus.p4
     http:
       paths:
       - path: /
         pathType: ImplementationSpecific
         backend:
           service:
-            name: bonusplay
+            name: bonus-p4
             port:
               name: http

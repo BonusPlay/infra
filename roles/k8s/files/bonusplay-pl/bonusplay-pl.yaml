@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bonusplay-pl
+  namespace: bonusplay-pl
+  labels:
+    app: bonusplay-pl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bonusplay-pl
+  template:
+    metadata:
+      labels:
+        app: bonusplay-pl
+    spec:
+      containers:
+      - name: bonusplay-pl
+        image: ghcr.io/bonusplay/bonusplay.pl:latest
+        imagePullPolicy: Always
+        args: ["3010"]
+        ports:
+        - name: http
+          containerPort: 3010
+          protocol: TCP
+      imagePullSecrets:
+      - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bonusplay-pl
+  namespace: bonusplay-pl
+spec:
+  type: ClusterIP
+  selector:
+    app: bonusplay-pl
+  ports:
+  - name: http
+    port: 3010
+    protocol: TCP
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bonusplay-pl
+  namespace: bonusplay-pl
+  annotations:
+    cert-manager.io/cluster-issuer: bonusplay
+spec:
+  tls:
+  - secretName: tls
+    hosts:
+    - "bonusplay.pl"
+    - "*.bonusplay.pl"
+  rules:
+  - host: bonusplay.pl
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: bonusplay-pl
+            port:
+              name: http

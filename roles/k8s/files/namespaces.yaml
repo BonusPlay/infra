@@ -2,7 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: bonusplay
+  name: bonus-p4
+  labels:
+    network: public
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bonusplay-pl
   labels:
     network: public
 ---

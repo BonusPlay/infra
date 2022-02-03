@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: tls
+  namespace: bonus-p4
+data:
+  tls.crt: "{{ bonus_p4.tls.crt | join('\n') | b64encode }}"
+  tls.key: "{{ bonus_p4.tls.key | b64encode }}"

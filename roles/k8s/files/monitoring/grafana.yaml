@@ -75,8 +75,7 @@ kind: Ingress
 metadata:
   name: grafana
   namespace: monitoring
-  labels:
-    app: grafana
+  annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:

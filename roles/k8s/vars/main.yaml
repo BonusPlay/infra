@@ -15,6 +15,14 @@ bonus_p4:
      - "{{ lookup('file', './files/ssl/ca-p4.crt') }}"
     key: "{{ lookup('file', './files/ssl/bonus.p4.key') }}"
 
+prometheus:
+  tls:
+    crt:
+     - "{{ lookup('file', './files/ssl/prom.bonus.p4.crt') }}"
+     - "{{ lookup('file', './files/ssl/ca-bonus.crt') }}"
+     - "{{ lookup('file', './files/ssl/ca-p4.crt') }}"
+    key: "{{ lookup('file', './files/ssl/prom.bonus.p4.key') }}"
+
 hedgedoc:
   postgres_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

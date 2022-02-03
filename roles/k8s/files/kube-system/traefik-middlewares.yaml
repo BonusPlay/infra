@@ -1,0 +1,30 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: https
+  namespace: kube-system
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: p4net
+  namespace: kube-system
+spec:
+  ipWhiteList:
+    sourceRange:
+    - 198.18.0.0/16
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: klisie
+  namespace: kube-system
+spec:
+  ipWhiteList:
+    sourceRange:
+    - 192.168.0.0/24
+---

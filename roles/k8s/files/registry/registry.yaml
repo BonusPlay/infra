@@ -51,8 +51,6 @@ kind: Service
 metadata:
   name: registry
   namespace: registry
-  labels:
-    app: registry
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '5001'
@@ -75,10 +73,10 @@ kind: Ingress
 metadata:
   name: registry
   namespace: registry
-  labels:
-    app: registry
   annotations:
     cert-manager.io/cluster-issuer: bonusplay
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: tls

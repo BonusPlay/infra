@@ -57,8 +57,6 @@ kind: Service
 metadata:
   name: synapse
   namespace: matrix
-  labels:
-    app: synapse
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '9000'
@@ -82,10 +80,10 @@ kind: Ingress
 metadata:
   name: synapse
   namespace: matrix
-  labels:
-    app: synapse
   annotations:
     cert-manager.io/cluster-issuer: bonusplay
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: tls

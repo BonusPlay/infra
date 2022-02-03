@@ -32,8 +32,6 @@ kind: Service
 metadata:
   name: kncyber
   namespace: kncyber
-  labels:
-    app: kncyber
 spec:
   type: ClusterIP
   selector:
@@ -49,10 +47,10 @@ kind: Ingress
 metadata:
   name: kncyber
   namespace: kncyber
-  labels:
-    app: kncyber
   annotations:
     cert-manager.io/cluster-issuer: kncyber
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: tls

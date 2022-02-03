@@ -57,8 +57,6 @@ kind: Service
 metadata:
   name: keycloak
   namespace: keycloak
-  labels:
-    app: keycloak
 spec:
   type: ClusterIP
   selector:
@@ -74,10 +72,10 @@ kind: Ingress
 metadata:
   name: keycloak
   namespace: keycloak
-  labels:
-    app: keycloak
   annotations:
     cert-manager.io/cluster-issuer: kncyber
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: kncyber-tls

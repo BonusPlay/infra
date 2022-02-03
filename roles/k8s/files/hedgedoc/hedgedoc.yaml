@@ -95,8 +95,6 @@ kind: Service
 metadata:
   name: hedgedoc
   namespace: hedgedoc
-  labels:
-    app: hedgedoc
 spec:
   type: ClusterIP
   selector:
@@ -112,10 +110,10 @@ kind: Ingress
 metadata:
   name: hedgedoc
   namespace: hedgedoc
-  labels:
-    app: hedgedoc
   annotations:
     cert-manager.io/cluster-issuer: kncyber
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: kncyber-tls

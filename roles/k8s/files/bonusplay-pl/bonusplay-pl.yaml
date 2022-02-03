@@ -49,6 +49,8 @@ metadata:
   namespace: bonusplay-pl
   annotations:
     cert-manager.io/cluster-issuer: bonusplay
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd
 spec:
   tls:
   - secretName: tls

@@ -56,24 +56,30 @@ spec:
             secretKeyRef:
               name: kutt
               key: JWT_SECRET
-        # - name: ADMIN_EMAILS
-        #   value: "kutt@bonusplay.pl"
-        # - name: REPORT_EMAIL
-        #   value: "kutt@bonusplay.pl"
-        # - name: CONTACT_EMAIL
-        #   value: "kutt@bonusplay.pl"
-        # - name: MAIL_HOST
-        #   value: "mail.bonusplay.pl"
-        # - name: MAIL_PORT
-        #   value: "465"
-        # - name: MAIL_SECURE
-        #   value: "true"
-        # - name: MAIL_USER
-        #   value: "{{ smtp.username }}"
-        # - name: MAIL_FROM
-        #   value: "kutt@bonusplay.pl"
-        # - name: MAIL_PASSWORD
-        #   value: "{{ smtp.password }}"
+        - name: ADMIN_EMAILS
+          value: "kutt@bonusplay.pl"
+        - name: REPORT_EMAIL
+          value: "kutt@bonusplay.pl"
+        - name: CONTACT_EMAIL
+          value: "kutt@bonusplay.pl"
+        - name: MAIL_HOST
+          value: "mail.bonusplay.pl"
+        - name: MAIL_PORT
+          value: "465"
+        - name: MAIL_SECURE
+          value: "true"
+        - name: MAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: kutt
+              key: MAIL_USER
+        - name: MAIL_FROM
+          value: "kutt@bonusplay.pl"
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kutt
+              key: MAIL_PASSWORD
 ---
 apiVersion: v1
 kind: Service

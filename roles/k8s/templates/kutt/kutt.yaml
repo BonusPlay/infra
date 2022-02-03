@@ -7,3 +7,5 @@ type: Opaque
 data:
   DB_PASSWORD: "{{ kutt.postgres_password | b64encode }}"
   JWT_SECRET: "{{ kutt.jwt_secret | b64encode }}"
+  MAIL_USER: "{{ smtp.username | b64encode }}"
+  MAIL_PASSWORD: "{{ smtp.password | b64encode }}"

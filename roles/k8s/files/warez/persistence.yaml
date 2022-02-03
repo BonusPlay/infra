@@ -9,8 +9,8 @@ spec:
   capacity:
     storage: 50Gi
   nfs:
-    server: 192.168.0.20
-    path: "/k8s/warez"
+    server: 192.168.100.10
+    path: "/warez-pv"
   mountOptions:
     - nfsvers=4.2,proto=tcp,port=2049
   persistentVolumeReclaimPolicy: Retain

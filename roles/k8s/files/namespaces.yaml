@@ -82,3 +82,10 @@ metadata:
   name: thelounge
   labels:
     network: public
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: warez
+  labels:
+    network: p4net

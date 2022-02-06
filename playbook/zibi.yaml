@@ -1,6 +1,6 @@
 ---
 - hosts: zibi
   roles:
-  - bird
+  # - bird
   - coredns
-  - p4net-server
+  # - p4net-server

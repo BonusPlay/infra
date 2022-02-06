@@ -1,5 +1,8 @@
 all:
   hosts:
+    zibi:
+      ansible_host: zibi.bonus.p4
+      ansible_ssh_user: ubuntu
     zonas:
       ansible_host: zonas.bonus.p4
       ansible_ssh_user: root

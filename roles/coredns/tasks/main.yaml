@@ -1,7 +1,11 @@
 - name: ensure directories exist
   become: yes
   ansible.builtin.file:
-    
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
   with_items:
   - /opt/coredns
   - /opt/coredns/config
@@ -10,4 +14,22 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/opt/coredns/{{ item }}"
-
+    owner: root
+    group: root
+    mode: "0644"
+  with_items:
+  - docker-compose.yaml
+  - config/Corefile
+  - config/zone.conf
+  register: result
+- name: restart docker compose
+  community.docker.docker_compose:
+    project_src: /opt/coredns
+    build: no
+    restarted: yes
+  when: result.changed
+- name: start docker compose
+  community.docker.docker_compose:
+    project_src: /opt/coredns
+    build: no
+    state: present

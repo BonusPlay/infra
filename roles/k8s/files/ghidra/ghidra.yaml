@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghidra
+  namespace: ghidra
+  labels:
+    app: ghidra
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: ghidra
+  template:
+    metadata:
+      labels:
+        app: ghidra
+    spec:
+      containers:
+      - name: ghidra
+        image: ghcr.io/bonusplay/docker-ghidra:10.1.2
+        imagePullPolicy: Always
+        args: ["server"]
+        ports:
+        - name: ghidra0
+          containerPort: 13100
+          protocol: TCP
+        - name: ghidra1
+          containerPort: 13101
+          protocol: TCP
+        - name: ghidra2
+          containerPort: 13102
+          protocol: TCP
+        env:
+        - name: MAXMEM
+          value: "500M"
+        - name: GHIDRA_IP
+          value: "198.18.69.106"
+        - name: GHIDRA_USERS
+          valueFrom:
+            configMapKeyRef:
+              name: ghidra
+              key: GHIDRA_USERS
+        volumeMounts:
+        - mountPath: /repos
+          name: ghidra-pv
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "200m"
+      volumes:
+      - name: ghidra-pv
+        persistentVolumeClaim:
+          claimName: ghidra
+      imagePullSecrets:
+      - name: registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghidra
+  namespace: ghidra
+spec:
+  type: LoadBalancer
+  selector:
+    app: ghidra
+  ports:
+  - name: ghidra0
+    port: 13100
+    protocol: TCP
+    targetPort: ghidra0
+  - name: ghidra1
+    port: 13101
+    protocol: TCP
+    targetPort: ghidra1
+  - name: ghidra2
+    port: 13102
+    protocol: TCP
+    targetPort: ghidra2

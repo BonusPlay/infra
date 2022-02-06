@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms
+  namespace: lms
+  labels:
+    app: lms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lms
+  template:
+    metadata:
+      labels:
+        app: lms
+    spec:
+      containers:
+      - name: lms
+        image: "lmscommunity/logitechmediaserver:stable"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 9000
+          protocol: TCP
+        - name: cli
+          containerPort: 9090
+          protocol: TCP
+        - name: stream-tcp
+          containerPort: 3483
+          protocol: TCP
+        - name: stream-udp
+          containerPort: 3483
+          protocol: UDP
+        env:
+        - name: PGID
+          value: "1000"
+        - name: PUID
+          value: "1000"
+        volumeMounts:
+        - name: lms-pv
+          mountPath: /config
+          subPath: config
+        - name: music-pv
+          mountPath: /music
+        - name: lms-pv
+          mountPath: /playlist
+          subPath: playlist
+      volumes:
+      - name: music-pv
+        persistentVolumeClaim:
+          claimName: music
+      - name: lms-pv
+        persistentVolumeClaim:
+          claimName: lms
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lms-udp
+  namespace: lms
+  labels:
+    app: lms
+spec:
+  type: LoadBalancer
+  selector:
+    app: lms
+  ports:
+  - name: stream-udp
+    port: 3483
+    protocol: UDP
+    targetPort: stream-udp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lms-tcp
+  namespace: lms
+  labels:
+    app: lms
+spec:
+  type: LoadBalancer
+  selector:
+    app: lms
+  ports:
+  - name: http
+    port: 9000
+    protocol: TCP
+    targetPort: http
+  - name: stream-tcp
+    port: 3483
+    protocol: TCP
+    targetPort: stream-tcp
+  - name: cli
+    port: 9090
+    protocol: TCP
+    targetPort: cli
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lms
+  namespace: lms
+spec:
+  rules:
+  - host: lms.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lms-tcp
+            port:
+              name: http

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ghidra
+  namespace: ghidra
+data:
+  GHIDRA_USERS: "bonus chivay msm"

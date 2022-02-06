@@ -89,3 +89,17 @@ metadata:
   name: warez
   labels:
     network: p4net
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pihole
+  labels:
+    network: klisie
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ghidra
+  labels:
+    network: p4net

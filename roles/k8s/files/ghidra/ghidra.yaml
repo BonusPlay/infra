@@ -6,7 +6,7 @@ metadata:
   labels:
     app: ghidra
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: ghidra
@@ -31,8 +31,8 @@ spec:
           containerPort: 13102
           protocol: TCP
         env:
-        - name: MAXMEM
-          value: "500M"
+        # - name: MAXMEM
+        #   value: "1G"
         - name: GHIDRA_IP
           value: "198.18.69.106"
         - name: GHIDRA_USERS
@@ -43,14 +43,19 @@ spec:
         volumeMounts:
         - mountPath: /repos
           name: ghidra-pv
-        resources:
-          limits:
-            memory: "500Mi"
-            cpu: "200m"
+        - mountPath: /ghidra/server/server.conf
+          subPath: server.conf
+          name: ghidra-config
+        # resources:
+        #   limits:
+        #     memory: "1Gi"
       volumes:
       - name: ghidra-pv
         persistentVolumeClaim:
           claimName: ghidra
+      - name: ghidra-config
+        configMap:
+          name: ghidra
       imagePullSecrets:
       - name: registry
 ---

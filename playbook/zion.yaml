@@ -1,5 +1,6 @@
 ---
 - hosts: zion
   roles:
+  - server
+# - k8s-node
 #  - p4net-client
-  - k8s-node

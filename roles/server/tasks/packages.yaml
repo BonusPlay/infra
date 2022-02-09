@@ -1,0 +1,7 @@
+- name: install base utilities
+  become: yes
+  ansible.builtin.package:
+    name:
+    - htop
+    - vim
+    state: present

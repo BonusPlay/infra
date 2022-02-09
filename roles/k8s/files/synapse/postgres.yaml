@@ -74,6 +74,18 @@ spec:
         - name: DB_OWNER_2
           value: "telegram"
 
+        - name: DB_USER_3
+          value: "facebook"
+        - name: DB_PASS_3
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: DB_PASS_3
+        - name: DB_NAME_3
+          value: "facebook"
+        - name: DB_OWNER_3
+          value: "facebook"
+
       volumes:
       - name: matrix-pv
         persistentVolumeClaim:

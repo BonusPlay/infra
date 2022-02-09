@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: telegram
+  name: facebook
   namespace: matrix
   labels:
-    app: telegram
+    app: facebook
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: telegram
+      app: facebook
   template:
     metadata:
       labels:
-        app: telegram
+        app: facebook
     spec:
       containers:
-      - name: telegram
-        image: dock.mau.dev/mautrix/telegram:latest
+      - name: facebook
+        image: dock.mau.dev/mautrix/facebook:latest
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
         volumeMounts:
         - name: matrix-pv
           mountPath: /data
-          subPath: telegram
+          subPath: facebook
       volumes:
       - name: matrix-pv
         persistentVolumeClaim:
@@ -38,17 +38,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: telegram
+  name: facebook
   namespace: matrix
   labels:
-    app: telegram
+    app: facebook
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '8000'
 spec:
   type: ClusterIP
   selector:
-    app: telegram
+    app: facebook
   ports:
   - name: http
     port: 29320
@@ -62,10 +62,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: telegram
+  name: facebook
   namespace: matrix
   labels:
-    app: telegram
+    app: facebook
   annotations:
     cert-manager.io/cluster-issuer: bonusplay
 spec:
@@ -78,10 +78,10 @@ spec:
   - host: matrix.bonusplay.pl
     http:
       paths:
-      - path: /_telegram
+      - path: /_facebook
         pathType: ImplementationSpecific
         backend:
           service:
-            name: telegram
+            name: facebook
             port:
               name: http

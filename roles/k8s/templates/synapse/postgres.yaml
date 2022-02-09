@@ -9,3 +9,4 @@ data:
   DB_PASS_0: "{{ synapse.postgres_password | b64encode }}"
   DB_PASS_1: "{{ googlechat.postgres_password | b64encode }}"
   DB_PASS_2: "{{ telegram.postgres_password | b64encode }}"
+  DB_PASS_3: "{{ facebook.postgres_password | b64encode }}"

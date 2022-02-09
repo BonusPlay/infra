@@ -29,7 +29,9 @@ data:
         handlers: [console]
 
     disable_existing_loggers: false
+
   bonusplay.pl.signing.key: "{{ synapse.signing_key }}"
+
   googlechat.yaml: |
     id: googlechat
     as_token: "{{ googlechat.as_token }}"
@@ -60,6 +62,21 @@ data:
           regex: \#telegram_.*:bonusplay\.pl
     url: http://telegram:29320
     sender_localpart: "{{ telegram.sender_localpart }}"
+    rate_limited: false
+
+  facebook.yaml: |
+    id: facebook
+    as_token: "{{ facebook.as_token }}"
+    hs_token: "{{ facebook.hs_token }}"
+    namespaces:
+        users:
+        - exclusive: true
+          regex: '@facebook_.*:bonusplay\.pl'
+        - exclusive: true
+          regex: '@facebookbot:bonusplay\.pl'
+        aliases: []
+    url: http://facebook:29320
+    sender_localpart: "{{ facebook.sender_localpart }}"
     rate_limited: false
 
   homeserver.yaml: |
@@ -1489,6 +1506,8 @@ data:
     #
     app_service_config_files:
       - /config/googlechat.yaml
+      - /config/telegram.yaml
+      - /config/facebook.yaml
 
     # Uncomment to enable tracking of application service IP addresses. Implicitly
     # enables MAU tracking for application service users.

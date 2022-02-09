@@ -48,7 +48,7 @@ metadata:
   namespace: bonus-p4
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd,kube-system-p4net@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https@kubernetescrd #,kube-system-p4net@kubernetescrd
 spec:
   tls:
   - secretName: tls

@@ -1,18 +1,44 @@
 ---
-- name: create temporary directory
-  ansible.builtin.tempfile:
-    state: directory
-  register: temp
-- name: download cert-manager definitions
-  ansible.builtin.get_url:
-    url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
-    dest: "{{ temp.path }}"
-- name: install cert-manager
-  kubernetes.core.k8s:
-    src: "{{ temp.path }}/cert-manager.yaml"
-    state: present
-- name: delete temporary directory
-  ansible.builtin.file:
-    path: "{{ temp.path }}"
-    state: absent
-  when: temp.path is defined
+- name: get deployments
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: cert-manager
+    namespace: cert-manager
+  register: result
+- name: get latest release
+  community.general.github_release:
+    user: cert-manager
+    repo: cert-manager
+    action: latest_release
+  register: latest_version
+- name: parse current version
+  ansible.builtin.set_fact:
+    current_version: "{{ result.resources[0].metadata.labels['app.kubernetes.io/version'] }}"
+- name: ask to update certmanager
+  ansible.builtin.debug:
+    msg: |
+      New version of cert-manager is available. {{ current_version }} => {{ latest_version.tag }}
+      Read update notes. And uncomment auto update
+# - name: update certmanager
+#   when: current_version != latest_version.tag
+#   block:
+#   - name: info user
+#     debug:
+#       msg: "Updating certmanager from {{ current_version }} to {{ latest_version.tag }}"
+#   - name: create temporary directory
+#     ansible.builtin.tempfile:
+#       state: directory
+#     register: temp
+#   - name: download cert-manager definitions
+#     ansible.builtin.get_url:
+#       url: "https://github.com/jetstack/cert-manager/releases/download/{{ latest_version.tag }}/cert-manager.yaml"
+#       dest: "{{ temp.path }}"
+#   - name: install cert-manager
+#     kubernetes.core.k8s:
+#       src: "{{ temp.path }}/cert-manager.yaml"
+#       state: present
+#   - name: delete temporary directory
+#     ansible.builtin.file:
+#       path: "{{ temp.path }}"
+#       state: absent
+#     when: temp.path is defined
